@@ -68,40 +68,40 @@ export default function SharePage() {
     toast.success('Link copied to clipboard!');
   };
 
-  if (loading) return <div className="p-8">Loading shares…</div>;
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading shares…</div>;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/tests" className="btn-secondary p-2">
+        <Link href="/dashboard/tests" className="btn-secondary p-2.5">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Share &amp; Track Test</h1>
-          <p className="text-sm text-gray-500">{test?.title}</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Share &amp; Track Test</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{test?.title}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Create Link Card */}
         <div className="card p-6 h-fit space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <Plus className="h-5 w-5 text-blue-600" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Plus className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             Generate New Link
           </h2>
           <form onSubmit={handleCreateShare} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Link Label (Optional)</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Link Label (Optional)</label>
               <input
                 className="input"
-                placeholder="e.g. Batch A, Math Club"
+                placeholder="e.g. Batch A, Math Olympiad"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Max Participants</label>
               <input
                 type="number"
                 min="1"
@@ -112,7 +112,7 @@ export default function SharePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expires At</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expires At</label>
               <input
                 type="datetime-local"
                 className="input"
@@ -128,13 +128,13 @@ export default function SharePage() {
 
         {/* Existing Shares List */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <Share2 className="h-5 w-5 text-gray-500" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Share2 className="h-5 w-5 text-slate-400" />
             Active Links ({shares.length})
           </h2>
 
           {shares.length === 0 ? (
-            <div className="card p-8 text-center text-gray-500">
+            <div className="card p-8 text-center text-slate-500 dark:text-slate-400">
               No share links generated yet. Create one using the form on the left!
             </div>
           ) : (
@@ -143,17 +143,17 @@ export default function SharePage() {
                 <div key={share.id} className="card p-6 space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-gray-900 text-base">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base">
                         {share.label || 'Default Share Link'}
                       </h3>
-                      <p className="text-xs text-gray-400">Created: {new Date(share.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-400">Created: {new Date(share.created_at).toLocaleDateString()}</p>
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => copyToClipboard(share.url)}
-                        className="btn-secondary text-xs flex items-center gap-1"
+                        className="btn-secondary text-xs flex items-center gap-1.5"
                       >
-                        <Copy className="h-3.5 w-3.5" />
+                        <Copy className="h-3.5 w-3.5 text-indigo-500" />
                         Copy URL
                       </button>
                     </div>
@@ -163,11 +163,11 @@ export default function SharePage() {
                   <ShareCounters share={share} />
 
                   {/* QR Code and URL footer */}
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <div className="text-xs text-gray-500 font-mono bg-gray-50 p-2 rounded truncate max-w-sm">
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 truncate w-full sm:max-w-sm">
                       {share.url}
                     </div>
-                    <div className="bg-white p-2 border border-gray-200 rounded-lg shadow-sm">
+                    <div className="bg-white p-2 border border-slate-200 rounded-xl shadow-sm flex-shrink-0">
                       <QRCodeSVG value={share.url} size={64} />
                     </div>
                   </div>
@@ -180,4 +180,3 @@ export default function SharePage() {
     </div>
   );
 }
-

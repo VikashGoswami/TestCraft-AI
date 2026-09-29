@@ -5,7 +5,7 @@ import { getTest, createQuestion, deleteQuestion, bulkUploadQuestions } from '@/
 import { startAttempt } from '@/lib/api/attempts';
 import type { Test, Question } from '@/lib/types';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Upload, ArrowLeft, Download, Play } from 'lucide-react';
+import { Plus, Trash2, Upload, ArrowLeft, Download, Play, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuestionsPage() {
@@ -135,29 +135,37 @@ export default function QuestionsPage() {
     }
   };
 
-  if (loading) return <div className="p-8">Loading questions…</div>;
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading questions…</div>;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto space-y-8">
       {/* Top Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/tests" className="btn-secondary p-2">
+          <Link href="/dashboard/tests" className="btn-secondary p-2.5">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Manage Questions</h1>
-            <p className="text-sm text-gray-500">{test?.title}</p>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Manage Questions</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{test?.title}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/question-paper"
+            className="btn-secondary flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium"
+            title="Digitize question paper using Gemini AI"
+          >
+            <Sparkles className="h-4 w-4 text-teal-500" />
+            AI Paper Import
+          </Link>
           <button
             onClick={handleStartTestNow}
             disabled={startingTest}
-            className="btn-secondary flex items-center gap-1.5 py-2 px-3 text-sm font-medium"
+            className="btn-secondary flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium"
             title="Start and test this assessment now"
           >
-            <Play className="h-4 w-4 text-green-600" />
+            <Play className="h-4 w-4 text-emerald-500" />
             {startingTest ? 'Starting…' : 'Start Test Now'}
           </button>
           <Link href={`/dashboard/tests/${testId}/share`} className="btn-primary">
@@ -171,15 +179,15 @@ export default function QuestionsPage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Add Question Form */}
           <div className="card p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Plus className="h-5 w-5 text-blue-600" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <Plus className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
               Add Single Question
             </h2>
             <form onSubmit={handleAddQuestion} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Question Text</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
                 <textarea
-                  className="input min-h-[80px]"
+                  className="input min-h-[90px]"
                   placeholder="e.g. What is the value of x if 2x + 5 = 15?"
                   value={questionText}
                   onChange={(e) => setQuestionText(e.target.value)}
@@ -189,7 +197,7 @@ export default function QuestionsPage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Topic</label>
                   <input
                     className="input"
                     placeholder="e.g. Algebra"
@@ -198,7 +206,7 @@ export default function QuestionsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Difficulty</label>
                   <select
                     className="input"
                     value={difficulty}
@@ -210,7 +218,7 @@ export default function QuestionsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Marks</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Marks</label>
                   <input
                     className="input"
                     type="number"
@@ -225,7 +233,9 @@ export default function QuestionsPage() {
 
               {/* Options */}
               <div className="space-y-3 pt-2">
-                <label className="block text-sm font-medium text-gray-700">Options (Select correct one)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Options (Select correct answer)
+                </label>
                 {options.map((opt, idx) => (
                   <div key={idx} className="flex items-center gap-3">
                     <input
@@ -240,7 +250,7 @@ export default function QuestionsPage() {
                           })),
                         );
                       }}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                     />
                     <input
                       className="input flex-1"
@@ -265,34 +275,35 @@ export default function QuestionsPage() {
 
           {/* Bulk Upload Section */}
           <div className="card p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Upload className="h-5 w-5 text-green-600" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Upload className="h-5 w-5 text-emerald-500" />
                 Bulk Upload Questions
               </h2>
               <a
                 href="/sample_questions.csv"
                 download="sample_questions.csv"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline bg-indigo-50 dark:bg-indigo-950/60 px-3 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800"
               >
                 <Download className="h-3.5 w-3.5" />
                 Download Sample CSV
               </a>
             </div>
-            <p className="text-sm text-gray-500 mb-4">
-              Upload a <code>.csv</code> or <code>.xlsx</code> file containing columns:{' '}
-              <code>question_text, option_a, option_b, option_c, option_d, correct_option, marks, topic, difficulty</code>
-              <br />
-              <span className="text-xs text-gray-400">marks defaults to 1 if omitted.</span>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+              Upload a <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono">.csv</code> or{' '}
+              <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono">.xlsx</code> file containing columns:{' '}
+              <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono">
+                question_text, option_a, option_b, option_c, option_d, correct_option, marks, topic, difficulty
+              </code>
             </p>
-            <form onSubmit={handleBulkUpload} className="flex items-center gap-4">
+            <form onSubmit={handleBulkUpload} className="flex flex-col sm:flex-row items-center gap-4">
               <input
                 type="file"
                 accept=".csv,.xlsx,.xls"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-300 hover:file:bg-indigo-100 cursor-pointer"
               />
-              <button type="submit" disabled={uploading || !file} className="btn-primary whitespace-nowrap">
+              <button type="submit" disabled={uploading || !file} className="btn-primary whitespace-nowrap w-full sm:w-auto">
                 {uploading ? 'Uploading…' : 'Upload File'}
               </button>
             </form>
@@ -302,32 +313,32 @@ export default function QuestionsPage() {
         {/* Right Col: Existing Questions List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900">Questions ({questions.length})</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Questions ({questions.length})</h2>
           </div>
 
           {questions.length === 0 ? (
-            <div className="card p-6 text-center text-gray-500 text-sm">
-              No questions added yet. Add one using the form or bulk upload!
+            <div className="card p-6 text-center text-slate-500 dark:text-slate-400 text-sm">
+              No questions added yet. Add one using the form or AI paper import!
             </div>
           ) : (
             <div className="space-y-3 max-h-[800px] overflow-y-auto pr-1">
               {questions.map((q, idx) => (
-                <div key={q.id} className="card p-4 space-y-2 relative group">
+                <div key={q.id} className="card p-4 space-y-2 relative group hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-xs font-bold text-blue-600">Q{idx + 1}</span>
-                    <span className="badge bg-gray-100 text-gray-600 text-[10px]">{q.topic}</span>
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">Q{idx + 1}</span>
+                    <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px]">{q.topic}</span>
                     <button
                       onClick={() => handleDelete(q.id)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      className="text-slate-400 hover:text-rose-500 transition-colors"
                       title="Delete Question"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="text-sm font-medium text-gray-800 line-clamp-2">{q.question_text}</p>
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200 line-clamp-2">{q.question_text}</p>
+                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                     <span>{q.options?.length || 0} options</span>
-                    <span className="font-medium text-blue-600">{q.marks ?? 1} mark{(q.marks ?? 1) !== 1 ? 's' : ''}</span>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">{q.marks ?? 1} mark{(q.marks ?? 1) !== 1 ? 's' : ''}</span>
                   </div>
                 </div>
               ))}
@@ -338,4 +349,3 @@ export default function QuestionsPage() {
     </div>
   );
 }
-

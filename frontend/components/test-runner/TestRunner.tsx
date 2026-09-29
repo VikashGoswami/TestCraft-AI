@@ -9,6 +9,8 @@ import { submitAttempt } from '@/lib/api/attempts';
 import QuestionCard from './QuestionCard';
 import QuestionPalette from './QuestionPalette';
 import Timer from './Timer';
+import Logo from '@/components/Logo';
+import ThemeToggle from '@/components/ThemeToggle';
 import toast from 'react-hot-toast';
 import {
   ChevronLeft,
@@ -354,29 +356,29 @@ export default function TestRunner({
      TEMPLATE B: Focused Practice (Minimal Single-Card CAT-Prep Layout)
      ────────────────────────────────────────────────────────────────────────── */
   return (
-    <div className="test-runner min-h-screen flex flex-col bg-gray-50" data-template={templateKey}>
+    <div className="test-runner min-h-screen flex flex-col bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 transition-colors duration-200" data-template={templateKey}>
       {/* Submit Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="card p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Submit Your Test?</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Are you sure you want to finish? You still have{' '}
-              <strong className="text-amber-600">{unansweredCount}</strong> unanswered questions.
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Submit Your Assessment?</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+              Are you sure you want to finish and submit? You have{' '}
+              <strong className="text-amber-600 dark:text-amber-400">{unansweredCount}</strong> unanswered questions remaining out of {questions.length}.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="btn-secondary flex-1 py-2.5"
+                className="btn-secondary flex-1 py-2.5 text-xs font-semibold"
               >
-                Continue Test
+                Return to Test
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="btn-danger flex-1 py-2.5 flex items-center justify-center gap-2"
+                className="btn-danger flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-2"
               >
-                {submitting ? 'Submitting…' : 'Yes, Submit'}
+                {submitting ? 'Submitting…' : 'Yes, Submit Test'}
               </button>
             </div>
           </div>
@@ -384,21 +386,30 @@ export default function TestRunner({
       )}
 
       {/* Top Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-xs">
-        <div>
-          <h1 className="font-bold text-gray-900 text-lg">{attempt.test?.title}</h1>
-          <p className="text-xs text-gray-500">
-            Candidate: {candidateName}
-          </p>
+      <header className="bg-white dark:bg-[#0c1220] border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+        <div className="flex items-center gap-4">
+          <Logo size="sm" showTagline={false} href={null} />
+          <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+          <div>
+            <h1 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-tight">
+              {attempt.test?.title}
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Candidate: <span className="font-semibold text-slate-700 dark:text-slate-300">{candidateName}</span>
+            </p>
+          </div>
         </div>
-        <Timer expiresAt={attempt.expires_at} onExpire={handleExpire} />
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Timer expiresAt={attempt.expires_at} onExpire={handleExpire} />
+        </div>
       </header>
 
       {/* Main Runner Body */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto p-6 gap-6">
+      <div className="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto p-4 sm:p-6 gap-6">
         {/* Left: Question Card & Action Controls */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div className="card p-8 shadow-xs">
+        <div className="flex-1 flex flex-col justify-between space-y-6">
+          <div className="card p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <QuestionCard
               question={currentQuestion}
               selectedOptionId={currentAnswer?.selected_option_id ?? null}
@@ -409,21 +420,21 @@ export default function TestRunner({
           </div>
 
           {/* Action Row */}
-          <div className="card p-4 mt-6 flex items-center justify-between gap-3 flex-wrap">
+          <div className="card p-4 flex items-center justify-between gap-3 flex-wrap border border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleMarkAndNext}
-                className="btn-secondary flex items-center gap-1.5 text-xs text-purple-700 hover:bg-purple-50"
+                className="btn-secondary flex items-center gap-1.5 text-xs text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40"
               >
                 <Bookmark className="h-4 w-4" />
-                Mark for Review &amp; Next
+                <span>Mark for Review &amp; Next</span>
               </button>
               <button
                 onClick={handleClear}
-                className="btn-secondary flex items-center gap-1.5 text-xs text-gray-600 hover:bg-gray-100"
+                className="btn-secondary flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <RotateCcw className="h-4 w-4" />
-                Clear Response
+                <span>Clear Response</span>
               </button>
             </div>
 
@@ -438,13 +449,13 @@ export default function TestRunner({
                 className="btn-secondary flex items-center gap-1 text-xs"
               >
                 <ChevronLeft className="h-4 w-4" />
-                Previous
+                <span>Previous</span>
               </button>
               <button
                 onClick={handleSaveAndNext}
                 className="btn-primary flex items-center gap-1 text-xs"
               >
-                Save &amp; Next
+                <span>Save &amp; Next</span>
                 <ChevronRight className="h-4 w-4" />
               </button>
               <button
@@ -452,14 +463,14 @@ export default function TestRunner({
                 className="btn-danger flex items-center gap-1.5 text-xs"
               >
                 <Send className="h-4 w-4" />
-                Submit Test
+                <span>Submit Test</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Right: Question Palette Sidebar */}
-        <aside className="w-80 card p-6 shadow-xs flex flex-col justify-between">
+        <aside className="w-full lg:w-80 card p-6 shadow-sm flex flex-col justify-between border border-slate-200 dark:border-slate-800">
           <QuestionPalette
             questions={questions}
             answers={answers}

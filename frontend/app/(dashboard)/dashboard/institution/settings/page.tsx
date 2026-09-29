@@ -23,23 +23,23 @@ export default function InstitutionSettingsPage() {
       .finally(() => setLoading(false));
   }, [user]);
 
-  if (loading) return <div className="p-8">Loading settings…</div>;
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading settings…</div>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto space-y-6">
+    <div className="p-6 md:p-8 max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Institution Settings</h1>
-        <p className="text-sm text-gray-500">Configure your organization branding and plan</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Institution Settings</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Configure your organization branding and plan</p>
       </div>
 
       <div className="card p-6 space-y-6">
-        <div className="flex items-center gap-4 pb-6 border-b border-gray-100">
-          <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+        <div className="flex items-center gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+          <div className="h-16 w-16 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
             <Building2 className="h-8 w-8" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{institution?.name}</h2>
-            <span className="badge bg-green-100 text-green-700 capitalize mt-1">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">{institution?.name}</h2>
+            <span className="badge bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 capitalize mt-1 font-semibold">
               Plan: {institution?.plan || 'Free Tier'}
             </span>
           </div>
@@ -47,7 +47,7 @@ export default function InstitutionSettingsPage() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Organization Name</label>
             <input
               type="text"
               className="input"
@@ -70,4 +70,3 @@ export default function InstitutionSettingsPage() {
     </div>
   );
 }
-

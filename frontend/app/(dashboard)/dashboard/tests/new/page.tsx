@@ -49,8 +49,8 @@ export default function NewTestPage() {
     has_negative_marking: false,
     negative_mark: 0.25,
     theme: 'focused',
-    primary_color: '#1a56db',
-    accent_color: '#7e3af2',
+    primary_color: '#4F46E5',
+    accent_color: '#0D9488',
   });
 
   const updateForm = <K extends keyof TestFormData>(key: K, value: TestFormData[K]) => {
@@ -108,23 +108,23 @@ export default function NewTestPage() {
   };
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-6 md:p-8 max-w-2xl mx-auto">
       <div className="mb-6">
-        <Link href="/dashboard/tests" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4">
+        <Link href="/dashboard/tests" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 mb-4 transition-colors">
           <ChevronLeft className="h-4 w-4" />
           Back to Tests
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Create New Test</h1>
-        <p className="text-gray-500 text-sm mt-1">Fill in the details below. You&apos;ll add questions in the next step.</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Create New Test</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Configure your test settings. You will add questions or import exam papers in the next step.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic info */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Basic Information</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Basic Information</h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Title <span className="text-rose-500">*</span>
             </label>
             <input
               className="input"
@@ -136,7 +136,7 @@ export default function NewTestPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
             <textarea
               className="input resize-none"
               rows={3}
@@ -149,10 +149,10 @@ export default function NewTestPage() {
 
         {/* Settings */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Test Settings</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Test Settings</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Duration (minutes)
               </label>
               <input
@@ -166,7 +166,7 @@ export default function NewTestPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Passing Score (%)
               </label>
               <input
@@ -181,7 +181,7 @@ export default function NewTestPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Visibility</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
               <select
                 className="input"
                 value={form.visibility}
@@ -195,7 +195,7 @@ export default function NewTestPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
               <select
                 className="input"
                 value={form.status}
@@ -210,7 +210,7 @@ export default function NewTestPage() {
 
         {/* Negative Marking */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Scoring Rules</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Scoring Rules</h2>
           <ToggleRow
             label="Enable Negative Marking"
             description="Deduct marks for incorrect answers to discourage guessing."
@@ -218,9 +218,9 @@ export default function NewTestPage() {
             onChange={v => updateForm('has_negative_marking', v)}
           />
           {form.has_negative_marking && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl p-4 space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-amber-900 dark:text-amber-200 mb-1">
                   Deduction per wrong answer (fraction of question marks)
                 </label>
                 <select
@@ -234,7 +234,7 @@ export default function NewTestPage() {
                   <option value={1}>1 mark (1 wrong = −1 mark)</option>
                 </select>
               </div>
-              <p className="text-xs text-amber-700">
+              <p className="text-xs text-amber-800 dark:text-amber-300">
                 ⚠️ Example: If a question is worth <strong>2 marks</strong> and negative mark is{' '}
                 <strong>¼</strong>, each wrong answer deducts{' '}
                 <strong>{(2 * form.negative_mark).toFixed(2)} marks</strong>.
@@ -245,7 +245,7 @@ export default function NewTestPage() {
 
         {/* Shuffle options */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Randomisation</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Randomisation</h2>
           <ToggleRow
             label="Shuffle Questions"
             description="Present questions in a random order for each participant."
@@ -262,19 +262,19 @@ export default function NewTestPage() {
 
         {/* Theme */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Theme</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Theme</h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Template</label>
-            <div className="grid grid-cols-3 gap-3">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Template</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {THEME_OPTIONS.map(opt => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => updateForm('theme', opt.value)}
-                  className={`p-3 rounded-lg border-2 text-left text-sm transition-colors ${
+                  className={`p-3 rounded-xl border-2 text-left text-sm font-medium transition-all ${
                     form.theme === opt.value
-                      ? 'border-blue-600 bg-blue-50 text-blue-800'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   {opt.label}
@@ -283,40 +283,40 @@ export default function NewTestPage() {
             </div>
           </div>
           {form.theme === 'custom' && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 pt-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Primary Color</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={form.primary_color}
                     onChange={e => updateForm('primary_color', e.target.value)}
-                    className="h-9 w-12 rounded border border-gray-300 cursor-pointer"
+                    className="h-10 w-12 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
                   />
                   <input
                     className="input flex-1"
                     type="text"
                     value={form.primary_color}
                     onChange={e => updateForm('primary_color', e.target.value)}
-                    placeholder="#1a56db"
+                    placeholder="#4F46E5"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Accent Color</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Accent Color</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={form.accent_color}
                     onChange={e => updateForm('accent_color', e.target.value)}
-                    className="h-9 w-12 rounded border border-gray-300 cursor-pointer"
+                    className="h-10 w-12 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
                   />
                   <input
                     className="input flex-1"
                     type="text"
                     value={form.accent_color}
                     onChange={e => updateForm('accent_color', e.target.value)}
-                    placeholder="#7e3af2"
+                    placeholder="#0D9488"
                   />
                 </div>
               </div>
@@ -351,8 +351,8 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-sm font-medium text-gray-900">{label}</p>
-        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>
       </div>
       <button
         type="button"
@@ -360,7 +360,7 @@ function ToggleRow({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-          checked ? 'bg-blue-600' : 'bg-gray-200'
+          checked ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
         }`}
       >
         <span

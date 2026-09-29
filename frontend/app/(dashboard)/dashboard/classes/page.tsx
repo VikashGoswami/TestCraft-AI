@@ -77,15 +77,15 @@ export default function ClassesPage() {
     }
   };
 
-  if (loading) return <div className="p-8">Loading classes…</div>;
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading classes…</div>;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           {isStudent ? 'My Enrolled Classes' : 'Class Management'}
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           {isStudent
             ? 'Access tests assigned specifically to your section'
             : 'Organize students into batches and assign customized test papers'}
@@ -97,16 +97,16 @@ export default function ClassesPage() {
         <div className="card p-6 h-fit space-y-4">
           {isStudent ? (
             <>
-              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <KeyRound className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <KeyRound className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 Join via Code
               </h2>
               <form onSubmit={handleJoin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Class Code</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class Code</label>
                   <input
                     type="text"
-                    className="input uppercase font-mono tracking-widest text-center"
+                    className="input uppercase font-mono tracking-widest text-center text-base"
                     placeholder="e.g. 6XYZ89"
                     maxLength={6}
                     value={joinCode}
@@ -121,13 +121,13 @@ export default function ClassesPage() {
             </>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Plus className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Plus className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 Create New Class
               </h2>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Class Name</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class Name</label>
                   <input
                     type="text"
                     className="input"
@@ -147,34 +147,34 @@ export default function ClassesPage() {
 
         {/* Classes List */}
         <div className="md:col-span-2 space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <Users2 className="h-5 w-5 text-gray-500" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Users2 className="h-5 w-5 text-slate-400" />
             Active Sections ({classes.length})
           </h2>
 
           {classes.length === 0 ? (
-            <div className="card p-8 text-center text-gray-500">
+            <div className="card p-8 text-center text-slate-500 dark:text-slate-400">
               No classes found. {isStudent ? 'Enter a code to join one!' : 'Create one to get started.'}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {classes.map((cls) => (
-                <div key={cls.id} className="card p-6 flex flex-col justify-between space-y-4 hover:border-gray-300 transition-all">
+                <div key={cls.id} className="card p-6 flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all">
                   <div>
-                    <h3 className="font-bold text-gray-900 text-lg">{cls.name}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-lg">{cls.name}</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {cls.students_count || 0} Enrolled Students
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
-                    <span className="font-mono bg-gray-100 px-2 py-1 rounded text-gray-700">
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                    <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-700 dark:text-slate-300">
                       Code: {cls.join_code}
                     </span>
                     {!isStudent && (
                       <Link
                         href={`/dashboard/classes/${cls.id}`}
-                        className="text-blue-600 font-semibold flex items-center gap-1 hover:underline"
+                        className="text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1 hover:underline"
                       >
                         Manage <ArrowRight className="h-3 w-3" />
                       </Link>
@@ -189,4 +189,3 @@ export default function ClassesPage() {
     </div>
   );
 }
-

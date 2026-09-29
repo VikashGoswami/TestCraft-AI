@@ -30,21 +30,21 @@ export default function ThemePage() {
   if (loading) {
     return (
       <div className="p-8 min-h-[50vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/tests" className="btn-secondary p-2">
+        <Link href="/dashboard/tests" className="btn-secondary p-2.5">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Custom Exam Theming</h1>
-          <p className="text-sm text-gray-500">{test?.title}</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Custom Exam Theming</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{test?.title}</p>
         </div>
       </div>
 

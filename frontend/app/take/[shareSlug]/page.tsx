@@ -1,10 +1,23 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { resolveShare, startAttempt } from '@/lib/api/attempts';
 import { useAuth } from '@/lib/hooks/useAuth';
+import Logo from '@/components/Logo';
+import ThemeToggle from '@/components/ThemeToggle';
 import toast from 'react-hot-toast';
-import { Clock, HelpCircle, CheckCircle2, ShieldAlert, User, Mail } from 'lucide-react';
+import {
+  Clock,
+  HelpCircle,
+  CheckCircle2,
+  ShieldAlert,
+  User,
+  Mail,
+  ArrowRight,
+  ShieldCheck,
+  AlertTriangle,
+} from 'lucide-react';
 
 export default function TakeSharePage() {
   const { shareSlug } = useParams() as { shareSlug: string };
@@ -33,11 +46,11 @@ export default function TakeSharePage() {
 
     if (!user) {
       if (!guestName.trim()) {
-        toast.error('Name is required to start the test without login.');
+        toast.error('Name is required to start the test.');
         return;
       }
       if (!guestEmail.trim()) {
-        toast.error('Email ID is required to start the test without login.');
+        toast.error('Email ID is required to start the test.');
         return;
       }
     }
@@ -58,7 +71,7 @@ export default function TakeSharePage() {
           // @ts-ignore
           questions: res.data.test?.questions || [],
           answers: res.data.answers || [],
-        }),
+        })
       );
 
       router.push(`/take/${shareSlug}/run?attemptId=${res.data.id}`);
@@ -72,18 +85,23 @@ export default function TakeSharePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#090D16]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent" />
+          <p className="text-xs text-slate-400">Loading assessment details…</p>
+        </div>
       </div>
     );
   }
 
   if (!shareData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-        <ShieldAlert className="h-12 w-12 text-red-500 mb-3" />
-        <h1 className="text-xl font-bold text-gray-900">Unavailable Assessment</h1>
-        <p className="text-sm text-gray-500 mt-1">This link is either expired or at capacity limit.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#090D16] p-4 text-center">
+        <ShieldAlert className="h-12 w-12 text-rose-500 mb-3" />
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Unavailable Assessment</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          This test link is either expired, completed, or at maximum participant capacity.
+        </p>
       </div>
     );
   }
@@ -91,64 +109,92 @@ export default function TakeSharePage() {
   const { test } = shareData;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="card p-8 max-w-xl w-full shadow-lg space-y-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#090D16] flex flex-col items-center justify-center p-4 sm:p-6 transition-colors duration-200">
+      {/* Top Navbar */}
+      <div className="w-full max-w-xl flex items-center justify-between mb-6">
+        <Logo size="md" showTagline={false} href={null} />
+        <ThemeToggle />
+      </div>
+
+      <div className="card p-6 sm:p-8 max-w-xl w-full shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/50 border border-slate-200 dark:border-slate-800 space-y-6">
         <div>
-          <span className="badge bg-blue-100 text-blue-700 mb-2">Ready to Start</span>
-          <h1 className="text-2xl font-bold text-gray-900">{test.title}</h1>
-          {test.description && <p className="text-sm text-gray-600 mt-2">{test.description}</p>}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="badge bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+              Proctored CBT Assessment
+            </span>
+            {test.negative_marking && (
+              <span className="badge bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Negative Marking: -{test.negative_mark ?? 0.25}
+              </span>
+            )}
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {test.title}
+          </h1>
+          {test.description && (
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+              {test.description}
+            </p>
+          )}
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-3">
-            <Clock className="h-6 w-6 text-blue-600" />
+        <div className="grid grid-cols-2 gap-3.5">
+          <div className="p-4 bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+              <Clock className="h-5 w-5" />
+            </div>
             <div>
-              <p className="text-xs text-gray-500">Duration</p>
-              <p className="font-bold text-gray-900">{test.duration_minutes} Minutes</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Duration</p>
+              <p className="font-bold text-slate-900 dark:text-white">{test.duration_minutes} Mins</p>
             </div>
           </div>
-          <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-3">
-            <HelpCircle className="h-6 w-6 text-purple-600" />
+          <div className="p-4 bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400">
+              <HelpCircle className="h-5 w-5" />
+            </div>
             <div>
-              <p className="text-xs text-gray-500">Questions</p>
-              <p className="font-bold text-gray-900">{test.question_count} Questions</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Questions</p>
+              <p className="font-bold text-slate-900 dark:text-white">{test.question_count} Questions</p>
             </div>
           </div>
         </div>
 
         {/* Instructions */}
-        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-xs text-blue-900 space-y-2">
-          <p className="font-bold flex items-center gap-1.5">
-            <CheckCircle2 className="h-4 w-4 text-blue-600" /> Rules &amp; Instructions:
+        <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 rounded-2xl p-4 text-xs text-indigo-950 dark:text-indigo-200 space-y-2">
+          <p className="font-bold flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300">
+            <CheckCircle2 className="h-4 w-4" /> Exam Instructions:
           </p>
-          <ul className="list-disc list-inside space-y-1 text-gray-600 ml-1">
-            <li>The server countdown begins immediately upon clicking <strong>Start Test</strong>.</li>
+          <ul className="list-disc list-inside space-y-1.5 text-slate-600 dark:text-slate-400 ml-1">
+            <li>The server countdown starts immediately when you click <strong>Start Test Now</strong>.</li>
             <li>Selecting an option does <strong>not</strong> auto-advance — click <strong>Save &amp; Next</strong>.</li>
-            <li>You can mark questions to revisit via the palette before submitting.</li>
-            <li>Your answers are automatically saved as you click through.</li>
+            <li>Use the 5-state Question Palette to mark questions and review later.</li>
+            <li>Detailed AI explanations &amp; short tricks will be available immediately after submission.</li>
           </ul>
         </div>
 
-        {/* Guest Credentials (if not logged in) or Logged In Status */}
+        {/* Guest or Logged in Candidate details */}
         <form onSubmit={handleStart} className="space-y-4">
           {!user ? (
-            <div className="space-y-3 pt-2 border-t border-gray-100">
+            <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="text-sm font-bold text-gray-900">Candidate Information</h3>
-                <p className="text-xs text-amber-700 font-medium mt-0.5">
-                  Name and email ID are required when taking test without login.
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Candidate Credentials
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Enter your details to generate your individualized scorecard
                 </p>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Full Name <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  Full Name <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="e.g. John Doe"
+                    placeholder="e.g. Alex Johnson"
                     className="input pl-9"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
@@ -157,14 +203,14 @@ export default function TakeSharePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Email Address <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  Email Address <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                   <input
                     type="email"
-                    placeholder="e.g. john@example.com"
+                    placeholder="e.g. alex@example.com"
                     className="input pl-9"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
@@ -174,21 +220,38 @@ export default function TakeSharePage() {
               </div>
             </div>
           ) : (
-            <div className="p-3.5 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-green-900">Signed in as {user.name}</p>
-                <p className="text-xs text-green-700 mt-0.5">{user.email}</p>
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <div>
+                  <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                    Logged in as {user.name}
+                  </p>
+                  <p className="text-[11px] text-emerald-700 dark:text-emerald-400">{user.email}</p>
+                </div>
               </div>
-              <span className="badge bg-green-200 text-green-800 text-[10px] font-semibold">Logged In</span>
+              <span className="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 text-[10px] font-bold">
+                Verified
+              </span>
             </div>
           )}
 
           <button
             type="submit"
             disabled={starting}
-            className="btn-primary w-full py-3.5 text-base font-bold shadow-sm"
+            className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2"
           >
-            {starting ? 'Initializing Session…' : 'Start Test Now'}
+            {starting ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                Initializing Assessment Session…
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                Start Test Now
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            )}
           </button>
         </form>
       </div>

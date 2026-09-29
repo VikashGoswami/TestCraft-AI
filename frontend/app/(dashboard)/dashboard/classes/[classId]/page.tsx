@@ -60,31 +60,31 @@ export default function ClassDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-8">Loading class details…</div>;
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading class details…</div>;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/classes" className="btn-secondary p-2">
+        <Link href="/dashboard/classes" className="btn-secondary p-2.5">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Class Details</h1>
-          <p className="text-sm text-gray-500">Manage enrolled students and assign assessments</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Class Details</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Manage enrolled students and assign assessments</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Enroll Student */}
         <div className="card p-6 space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-blue-600" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             Enroll Student by Email
           </h2>
           <form onSubmit={handleAddStudent} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Student Email</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Student Email</label>
               <input
                 type="email"
                 className="input"
@@ -102,13 +102,13 @@ export default function ClassDetailPage() {
 
         {/* Assign Assessment */}
         <div className="card p-6 space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <FileCheck className="h-5 w-5 text-purple-600" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <FileCheck className="h-5 w-5 text-teal-600 dark:text-teal-400" />
             Assign Assessment to Class
           </h2>
           <form onSubmit={handleAssignTest} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Select Test</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Test</label>
               <select
                 className="input"
                 value={selectedTestId}
@@ -132,4 +132,3 @@ export default function ClassDetailPage() {
     </div>
   );
 }
-

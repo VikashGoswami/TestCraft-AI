@@ -6,10 +6,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Design Token Contract (§6.3) ───────────────────────────────────── */
+/* ── CSS Design Token Contract ────────────────────────────────────────── */
 .test-runner {
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 16px;
@@ -26,59 +26,123 @@
 
 /* ── Focused Template (default) ─────────────────────────────────────────── */
 [data-template="focused"] {
-  --state-answered:        #22c55e;  /* green-500 */
-  --state-not-answered:    #f87171;  /* red-400 */
-  --state-not-visited:     #e5e7eb;  /* gray-200 */
-  --state-marked:          #a855f7;  /* purple-500 */
-  --state-answered-marked: #8b5cf6;  /* violet-500 with check overlay */
+  --state-answered:        #10b981;  /* emerald-500 */
+  --state-not-answered:    #f43f5e;  /* rose-500 */
+  --state-not-visited:     #94a3b8;  /* slate-400 */
+  --state-marked:          #8b5cf6;  /* violet-500 */
+  --state-answered-marked: #6366f1;  /* indigo-500 */
   --state-current-ring:    #3b82f6;  /* blue-500 */
+}
+
+/* Dark mode variations for focused template */
+.dark [data-template="focused"] {
+  --state-answered:        #059669;
+  --state-not-answered:    #e11d48;
+  --state-not-visited:     #475569;
+  --state-marked:          #7c3aed;
+  --state-answered-marked: #4f46e5;
+  --state-current-ring:    #60a5fa;
 }
 
 /* ── Corporate Template (TCS iON style) ─────────────────────────────────── */
 [data-template="corporate"] {
   --state-answered:        #16a34a;  /* green-600 */
   --state-not-answered:    #dc2626;  /* red-600 */
-  --state-not-visited:     #d1d5db;  /* gray-300 */
+  --state-not-visited:     #cbd5e1;  /* slate-300 */
   --state-marked:          #7c3aed;  /* violet-700 */
   --state-answered-marked: #5b21b6;  /* purple-800 */
   --state-current-ring:    #1d4ed8;  /* blue-700 */
 }
 
+.dark [data-template="corporate"] {
+  --state-answered:        #15803d;
+  --state-not-answered:    #b91c1c;
+  --state-not-visited:     #334155;
+  --state-marked:          #6d28d9;
+  --state-answered-marked: #4c1d95;
+  --state-current-ring:    #3b82f6;
+}
+
 /* ── Custom Template ─────────────────────────────────────────────────────── */
 [data-template="custom"] {
-  /* Values injected via inline CSS vars from test theme */
-  --state-answered:        var(--theme-answered, #22c55e);
-  --state-not-answered:    var(--theme-not-answered, #f87171);
-  --state-not-visited:     var(--theme-not-visited, #e5e7eb);
-  --state-marked:          var(--theme-marked, #a855f7);
-  --state-answered-marked: var(--theme-answered-marked, #8b5cf6);
+  --state-answered:        var(--theme-answered, #10b981);
+  --state-not-answered:    var(--theme-not-answered, #f43f5e);
+  --state-not-visited:     var(--theme-not-visited, #94a3b8);
+  --state-marked:          var(--theme-marked, #8b5cf6);
+  --state-answered-marked: var(--theme-answered-marked, #6366f1);
   --state-current-ring:    var(--theme-current-ring, #3b82f6);
 }
 
-/* ── Global Utilities ───────────────────────────────────────────────────── */
+/* ── Global Theme Base ─────────────────────────────────────────────────── */
 @layer base {
-  * { box-sizing: border-box; }
-  body { @apply bg-gray-50 text-gray-900 antialiased; }
+  * {
+    box-sizing: border-box;
+    border-color: rgba(226, 232, 240, 0.8);
+  }
+
+  .dark * {
+    border-color: rgba(30, 41, 59, 0.8);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-200;
+  }
+
+  .dark body {
+    @apply bg-[#090D16] text-slate-100;
+  }
 }
 
+/* ── Global Utility Components ─────────────────────────────────────────── */
 @layer components {
   .btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-medium rounded-xl px-4 py-2.5 text-sm text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-teal-600 hover:from-indigo-500 hover:to-teal-500 shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none;
   }
+
   .btn-secondary {
-    @apply bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors;
+    @apply inline-flex items-center justify-center font-medium rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white shadow-sm active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
   }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center font-medium rounded-xl px-4 py-2.5 text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white transition-all duration-150;
+  }
+
   .btn-danger {
-    @apply bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors;
+    @apply inline-flex items-center justify-center font-medium rounded-xl px-4 py-2.5 text-sm text-white bg-rose-600 hover:bg-rose-500 shadow-sm active:scale-[0.98] transition-all duration-150 disabled:opacity-50;
   }
+
   .input {
-    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500;
+    @apply block w-full rounded-xl border border-slate-300 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20 transition-all;
   }
+
   .card {
-    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+    @apply bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-none transition-colors duration-200;
   }
+
   .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
 }
 
+/* Custom Scrollbar for sleek modern SaaS look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}

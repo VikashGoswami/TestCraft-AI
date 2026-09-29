@@ -101,32 +101,32 @@ export default function EditTestPage() {
   if (fetching) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-6 md:p-8 max-w-2xl mx-auto">
       <div className="mb-6">
         <Link
           href={`/dashboard/tests/${testId}/questions`}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4"
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 mb-4 transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
           Back to Questions
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Edit Test Settings</h1>
-        <p className="text-gray-500 text-sm mt-1">Update the test configuration below.</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit Test Settings</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Update your test timing, negative marking, and visibility rules.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic info */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Basic Information</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Basic Information</h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Title <span className="text-rose-500">*</span>
             </label>
             <input
               className="input"
@@ -137,7 +137,7 @@ export default function EditTestPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
             <textarea
               className="input resize-none"
               rows={3}
@@ -149,10 +149,10 @@ export default function EditTestPage() {
 
         {/* Settings */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Test Settings</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Test Settings</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Duration (minutes)
               </label>
               <input
@@ -166,7 +166,7 @@ export default function EditTestPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Passing Score (%)
               </label>
               <input
@@ -181,7 +181,7 @@ export default function EditTestPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Visibility</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
               <select
                 className="input"
                 value={form.visibility}
@@ -195,7 +195,7 @@ export default function EditTestPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
               <select
                 className="input"
                 value={form.status}
@@ -211,7 +211,7 @@ export default function EditTestPage() {
 
         {/* Negative Marking */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Scoring Rules</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Scoring Rules</h2>
           <ToggleRow
             label="Enable Negative Marking"
             description="Deduct marks for incorrect answers to discourage guessing."
@@ -219,9 +219,9 @@ export default function EditTestPage() {
             onChange={v => updateForm('has_negative_marking', v)}
           />
           {form.has_negative_marking && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl p-4 space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-amber-900 dark:text-amber-200 mb-1">
                   Deduction per wrong answer (fraction of question marks)
                 </label>
                 <select
@@ -235,7 +235,7 @@ export default function EditTestPage() {
                   <option value={1}>1 mark (1 wrong = −1 mark)</option>
                 </select>
               </div>
-              <p className="text-xs text-amber-700">
+              <p className="text-xs text-amber-800 dark:text-amber-300">
                 ⚠️ Example: If a question is worth <strong>2 marks</strong> and negative mark is{' '}
                 <strong>¼</strong>, each wrong answer deducts{' '}
                 <strong>{(2 * form.negative_mark).toFixed(2)} marks</strong>.
@@ -246,7 +246,7 @@ export default function EditTestPage() {
 
         {/* Shuffle options */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Randomisation</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Randomisation</h2>
           <ToggleRow
             label="Shuffle Questions"
             description="Present questions in a random order for each participant."
@@ -288,8 +288,8 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-sm font-medium text-gray-900">{label}</p>
-        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>
       </div>
       <button
         type="button"
@@ -297,7 +297,7 @@ function ToggleRow({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-          checked ? 'bg-blue-600' : 'bg-gray-200'
+          checked ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
         }`}
       >
         <span

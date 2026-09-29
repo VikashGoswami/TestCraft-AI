@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 160" width="100%" height="100%" fill="none">
+  <!-- Document Body with Folded Corner -->
+  <path d="M12 4 C12 1.79 13.79 0 16 0 L68 0 L96 28 L96 112 C96 118.63 90.63 124 84 124 L24 124 C17.37 124 12 118.63 12 112 Z" fill="#4F46E5"/>
+  
+  <!-- Folded Corner Flap -->
+  <path d="M68 0 L68 20 C68 24.42 71.58 28 76 28 L96 28 Z" fill="#818CF8"/>
+  
+  <!-- White Checkmark -->
+  <path d="M30 64 L46 80 L78 44" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Emerald Circle Badge with Sparkle -->
+  <circle cx="92" cy="116" r="26" fill="#0D9488"/>
+  <!-- 4-point Sparkle Star -->
+  <path d="M92 98 Q92 116 74 116 Q92 116 92 134 Q92 116 110 116 Q92 116 92 98 Z" fill="#FFFFFF"/>
+</svg>
