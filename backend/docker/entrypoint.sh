@@ -21,7 +21,7 @@ mkdir -p /var/www/html/storage/framework/sessions \
          /var/www/html/database
 
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env /var/www/html/database
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 chmod 664 /var/www/html/.env
 
 # Generate application key if APP_KEY environment variable is not passed
@@ -37,7 +37,8 @@ if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
         touch /var/www/html/database/database.sqlite
     fi
     chown -R www-data:www-data /var/www/html/database
-    chmod 664 /var/www/html/database/database.sqlite || true
+    chmod 666 /var/www/html/database/database.sqlite || true
+    chmod 777 /var/www/html/database || true
 fi
 
 # Dynamic Render Port: configure Nginx to listen on $PORT (defaults to 80 if not set)

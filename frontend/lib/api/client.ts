@@ -53,6 +53,15 @@ client.interceptors.request.use(async (config) => {
       config.headers['X-XSRF-TOKEN'] = token;
     }
   }
+
+  // Attach Sanctum Bearer token for reliable cross-domain authentication
+  if (typeof window !== 'undefined') {
+    const authToken = localStorage.getItem('auth_token');
+    if (authToken && !config.headers['Authorization']) {
+      config.headers['Authorization'] = `Bearer ${authToken}`;
+    }
+  }
+
   return config;
 });
 
@@ -67,6 +76,9 @@ client.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 419) {
       csrfInitialized = false;
+      if (typeof window !== 'undefined' && error.response?.status === 401) {
+        localStorage.removeItem('auth_token');
+      }
     }
     return Promise.reject(error);
   },

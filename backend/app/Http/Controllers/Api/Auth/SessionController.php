@@ -10,22 +10,35 @@ class SessionController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ]);
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+                return response()->json(['message' => 'Invalid credentials.'], 401);
+            }
+
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
+
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' => array_merge($user->toArray(), ['roles' => $user->getRoleNames()]),
+                'token' => $token,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Login error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Login error: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $request->session()->regenerate();
-
-        $user = Auth::user();
-
-        return response()->json([
-            'user' => array_merge($user->toArray(), ['roles' => $user->getRoleNames()]),
-        ]);
     }
 
     public function logout(Request $request)

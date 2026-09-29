@@ -20,8 +20,18 @@ Route::prefix('v1')->group(function () {
     // ─── Public Health Check ──────────────────────────────────────────────────
     Route::get('health', function () {
         $database = 'connected';
+        $tables = [];
         try {
-            \Illuminate\Support\Facades\DB::connection()->getPdo();
+            $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+            $driver = \Illuminate\Support\Facades\DB::getDriverName();
+            $hasUsers = \Illuminate\Support\Facades\Schema::hasTable('users');
+            $hasRoles = \Illuminate\Support\Facades\Schema::hasTable('roles');
+            $tables = [
+                'driver' => $driver,
+                'users_table' => $hasUsers,
+                'roles_table' => $hasRoles,
+                'users_count' => $hasUsers ? \App\Models\User::count() : 0,
+            ];
         } catch (\Throwable $e) {
             $database = 'error: ' . $e->getMessage();
         }
@@ -30,6 +40,7 @@ Route::prefix('v1')->group(function () {
             'status' => 'healthy',
             'service' => 'TestCraft-AI Backend API',
             'database' => $database,
+            'details' => $tables,
             'php' => PHP_VERSION,
             'timestamp' => now()->toIso8601String(),
         ]);

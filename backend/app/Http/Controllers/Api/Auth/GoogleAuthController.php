@@ -20,8 +20,16 @@ class GoogleAuthController extends Controller
         try {
             $user = $this->googleAuth->handleIdToken($request->id_token);
 
-            Auth::login($user);
-            $request->session()->regenerate();
+            try {
+                Auth::login($user);
+                if ($request->hasSession()) {
+                    $request->session()->regenerate();
+                }
+            } catch (\Throwable $e) {
+                // Non-blocking fallback for stateless requests
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
 
             // Flag new users so the frontend can redirect to role/onboarding selection.
             $isNew = $user->wasRecentlyCreated
@@ -29,6 +37,7 @@ class GoogleAuthController extends Controller
 
             return response()->json([
                 'user' => array_merge($user->toArray(), ['roles' => $user->getRoleNames()]),
+                'token' => $token,
                 'is_new' => $isNew,
             ]);
         } catch (\Exception $e) {
