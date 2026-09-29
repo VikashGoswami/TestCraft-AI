@@ -172,44 +172,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation Sections */}
         <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-5">
-          {navSections.map((section) => (
-            <div key={section.section}>
-              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-2.5 mb-1.5">
-                {section.section}
-              </p>
-              <ul className="space-y-1">
-                {section.items.map((item) => {
-                  const Icon = ICON_MAP[item.icon];
-                  const isActive =
-                    item.href === '/dashboard'
-                      ? pathname === '/dashboard'
-                      : pathname === item.href || pathname.startsWith(item.href + '/');
+          {(() => {
+            const allNavHrefs = navSections.flatMap((s) => s.items.map((i) => i.href));
+            return navSections.map((section) => (
+              <div key={section.section}>
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-2.5 mb-1.5">
+                  {section.section}
+                </p>
+                <ul className="space-y-1">
+                  {section.items.map((item) => {
+                    const Icon = ICON_MAP[item.icon];
+                    const isExact = pathname === item.href;
+                    const isSubpath = pathname.startsWith(item.href + '/');
+                    const hasMoreSpecificMatch = allNavHrefs.some(
+                      (h) =>
+                        h !== item.href &&
+                        (pathname === h || pathname.startsWith(h + '/')) &&
+                        h.length > item.href.length,
+                    );
+                    const isActive = isExact || (isSubpath && !hasMoreSpecificMatch);
 
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm transition-all duration-150 ${
-                          isActive
-                            ? 'bg-indigo-600 text-white font-semibold shadow-sm shadow-indigo-600/30'
-                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                      >
-                        {Icon && (
-                          <Icon
-                            className={`h-4 w-4 flex-shrink-0 ${
-                              isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'
-                            }`}
-                          />
-                        )}
-                        <span>{item.label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm transition-all duration-150 ${
+                            isActive
+                              ? 'bg-indigo-600 text-white font-semibold shadow-sm shadow-indigo-600/30'
+                              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white'
+                          }`}
+                        >
+                          {Icon && (
+                            <Icon
+                              className={`h-4 w-4 flex-shrink-0 ${
+                                isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'
+                              }`}
+                            />
+                          )}
+                          <span>{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ));
+          })()}
         </nav>
 
         {/* Footer: Theme Toggle & User Profile */}

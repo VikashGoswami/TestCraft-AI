@@ -1,21 +1,22 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import client from '@/lib/api/client';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ArrowRight, Sparkles, Settings2, ShieldCheck, Palette, Shuffle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const VISIBILITY_OPTIONS = [
-  { value: 'private', label: 'Private — only you can access' },
-  { value: 'invite_only', label: 'Invite Only — anyone with the share link' },
-  { value: 'public', label: 'Public — listed publicly' },
+  { value: 'private', label: 'Private (Only you)' },
+  { value: 'invite_only', label: 'Invite Only (Via share link)' },
+  { value: 'public', label: 'Public (Open)' },
 ];
 
 const THEME_OPTIONS = [
-  { value: 'focused', label: '🎯 Focused — clean minimal layout' },
-  { value: 'corporate', label: '💼 Corporate — professional branding' },
-  { value: 'custom', label: '🎨 Custom — set your own colors' },
+  { value: 'focused', label: '🎯 Focused', desc: 'Minimal CBT' },
+  { value: 'corporate', label: '💼 Corporate', desc: 'TCS iON multi-panel' },
+  { value: 'custom', label: '🎨 Custom', desc: 'Custom branding' },
 ];
 
 interface TestFormData {
@@ -54,18 +55,18 @@ export default function NewTestPage() {
   });
 
   const updateForm = <K extends keyof TestFormData>(key: K, value: TestFormData[K]) => {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
-      toast.error('Title is required');
+      toast.error('Test title is required');
       return;
     }
     setLoading(true);
     try {
-      // Create test
+      // 1. Create test
       const res = await client.post('/tests', {
         title: form.title,
         description: form.description,
@@ -80,7 +81,7 @@ export default function NewTestPage() {
       });
       const testId = res.data.data?.id ?? res.data.id;
 
-      // Apply theme
+      // 2. Apply theme
       try {
         await client.post(`/tests/${testId}/theme`, {
           template_key: form.theme,
@@ -88,10 +89,10 @@ export default function NewTestPage() {
           accent_color: form.accent_color,
         });
       } catch {
-        // Theme is optional — don't block
+        // Theme is optional — do not block
       }
 
-      toast.success('Test created! Now add your questions.');
+      toast.success('Test created! Now add or import questions.');
       router.push(`/dashboard/tests/${testId}/questions`);
     } catch (err: any) {
       const errors = err.response?.data?.errors;
@@ -108,264 +109,384 @@ export default function NewTestPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-2xl mx-auto">
-      <div className="mb-6">
-        <Link href="/dashboard/tests" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 mb-4 transition-colors">
-          <ChevronLeft className="h-4 w-4" />
-          Back to Tests
-        </Link>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Create New Test</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Configure your test settings. You will add questions or import exam papers in the next step.</p>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4">
+      {/* Top Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80 dark:border-slate-800">
+        <div>
+          <Link
+            href="/dashboard/tests"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 mb-1 transition-colors"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" /> Back to Tests
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Create New Test
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Set up assessment details, scoring rules, and candidate test interface in one place.
+          </p>
+        </div>
+
+        {/* Header Action Buttons */}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Link href="/dashboard/tests" className="btn-secondary py-2 px-3 text-xs">
+            Cancel
+          </Link>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="btn-primary py-2 px-4 text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+          >
+            {loading ? (
+              'Creating…'
+            ) : (
+              <>
+                Create &amp; Add Questions
+                <ArrowRight className="h-3.5 w-3.5" />
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic info */}
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Basic Information</h2>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Title <span className="text-rose-500">*</span>
-            </label>
-            <input
-              className="input"
-              type="text"
-              placeholder="e.g. Biology Chapter 5 — Cell Division"
-              value={form.title}
-              onChange={e => updateForm('title', e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
-            <textarea
-              className="input resize-none"
-              rows={3}
-              placeholder="Optional description shown to participants before the test"
-              value={form.description}
-              onChange={e => updateForm('description', e.target.value)}
-            />
-          </div>
-        </div>
+      {/* Main Single-Screen Form Grid */}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left Column: Test Metadata & Timing (7 Columns) */}
+        <div className="lg:col-span-7 space-y-4">
+          {/* Card 1: Basic Information */}
+          <div className="card p-5 space-y-3.5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Settings2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                Assessment Details
+              </h2>
+              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Step 1 of 2</span>
+            </div>
 
-        {/* Settings */}
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Test Settings</h2>
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Duration (minutes)
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Test Title <span className="text-rose-500">*</span>
               </label>
               <input
-                className="input"
-                type="number"
-                min={1}
-                max={360}
-                value={form.duration_minutes}
-                onChange={e => updateForm('duration_minutes', parseInt(e.target.value, 10))}
+                className="input py-2 text-sm"
+                type="text"
+                placeholder="e.g. Physics Chapter 5 — Mechanics &amp; Kinematics"
+                value={form.title}
+                onChange={(e) => updateForm('title', e.target.value)}
                 required
+                autoFocus
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Passing Score (%)
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Description / Exam Syllabus <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <input
-                className="input"
-                type="number"
-                min={0}
-                max={100}
-                value={form.passing_score}
-                onChange={e => updateForm('passing_score', parseInt(e.target.value, 10))}
+                className="input py-2 text-sm"
+                type="text"
+                placeholder="Brief guidelines or candidate instructions shown before start..."
+                value={form.description}
+                onChange={(e) => updateForm('description', e.target.value)}
               />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
-              <select
-                className="input"
-                value={form.visibility}
-                onChange={e => updateForm('visibility', e.target.value)}
-              >
-                {VISIBILITY_OPTIONS.map(opt => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
-              <select
-                className="input"
-                value={form.status}
-                onChange={e => updateForm('status', e.target.value)}
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </div>
-          </div>
-        </div>
 
-        {/* Negative Marking */}
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Scoring Rules</h2>
-          <ToggleRow
-            label="Enable Negative Marking"
-            description="Deduct marks for incorrect answers to discourage guessing."
-            checked={form.has_negative_marking}
-            onChange={v => updateForm('has_negative_marking', v)}
-          />
-          {form.has_negative_marking && (
-            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl p-4 space-y-3">
+            {/* 4 Core Settings in Compact Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
               <div>
-                <label className="block text-sm font-medium text-amber-900 dark:text-amber-200 mb-1">
-                  Deduction per wrong answer (fraction of question marks)
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Duration <span className="text-slate-400 font-normal">(mins)</span>
+                </label>
+                <input
+                  className="input py-2 text-sm"
+                  type="number"
+                  min={1}
+                  max={360}
+                  value={form.duration_minutes}
+                  onChange={(e) => updateForm('duration_minutes', parseInt(e.target.value, 10) || 30)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Pass Mark <span className="text-slate-400 font-normal">(%)</span>
+                </label>
+                <input
+                  className="input py-2 text-sm"
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={form.passing_score}
+                  onChange={(e) => updateForm('passing_score', parseInt(e.target.value, 10) || 60)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Visibility
                 </label>
                 <select
-                  className="input"
-                  value={form.negative_mark}
-                  onChange={e => updateForm('negative_mark', parseFloat(e.target.value))}
+                  className="input py-2 text-xs"
+                  value={form.visibility}
+                  onChange={(e) => updateForm('visibility', e.target.value)}
                 >
-                  <option value={0.25}>¼ mark (e.g. 4 wrong = −1 mark)</option>
-                  <option value={0.33}>⅓ mark (e.g. 3 wrong = −1 mark)</option>
-                  <option value={0.5}>½ mark (e.g. 2 wrong = −1 mark)</option>
-                  <option value={1}>1 mark (1 wrong = −1 mark)</option>
+                  {VISIBILITY_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
                 </select>
               </div>
-              <p className="text-xs text-amber-800 dark:text-amber-300">
-                ⚠️ Example: If a question is worth <strong>2 marks</strong> and negative mark is{' '}
-                <strong>¼</strong>, each wrong answer deducts{' '}
-                <strong>{(2 * form.negative_mark).toFixed(2)} marks</strong>.
-              </p>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Initial Status
+                </label>
+                <select
+                  className="input py-2 text-xs"
+                  value={form.status}
+                  onChange={(e) => updateForm('status', e.target.value)}
+                >
+                  <option value="draft">Draft (Private)</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Card 2: Question Randomisation Toggles */}
+          <div className="card p-4 space-y-3">
+            <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+              <Shuffle className="h-3.5 w-3.5 text-indigo-500" />
+              Anti-Cheating &amp; Question Delivery
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <CompactToggle
+                label="Shuffle Questions"
+                desc="Randomize question sequence for each applicant"
+                checked={form.shuffle_questions}
+                onChange={(v) => updateForm('shuffle_questions', v)}
+              />
+              <CompactToggle
+                label="Shuffle Options"
+                desc="Shuffle choices (A/B/C/D) per question"
+                checked={form.shuffle_options}
+                onChange={(v) => updateForm('shuffle_options', v)}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Shuffle options */}
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Randomisation</h2>
-          <ToggleRow
-            label="Shuffle Questions"
-            description="Present questions in a random order for each participant."
-            checked={form.shuffle_questions}
-            onChange={v => updateForm('shuffle_questions', v)}
-          />
-          <ToggleRow
-            label="Shuffle Options"
-            description="Present answer options in a random order for each question."
-            checked={form.shuffle_options}
-            onChange={v => updateForm('shuffle_options', v)}
-          />
-        </div>
+        {/* Right Column: Scoring Rules & Theme (5 Columns) */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Card 3: Scoring & Negative Marking */}
+          <div className="card p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                Scoring &amp; Negative Marking
+              </h2>
+              {form.has_negative_marking && (
+                <span className="badge bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[10px]">
+                  Penalty Active
+                </span>
+              )}
+            </div>
 
-        {/* Theme */}
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Theme</h2>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Template</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {THEME_OPTIONS.map(opt => (
+            <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+              <div>
+                <p className="text-xs font-semibold text-slate-900 dark:text-white">Enable Negative Marking</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Deduct marks for incorrect answers</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={form.has_negative_marking}
+                onClick={() => updateForm('has_negative_marking', !form.has_negative_marking)}
+                className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none flex-shrink-0 ${
+                  form.has_negative_marking ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                    form.has_negative_marking ? 'translate-x-5' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {form.has_negative_marking && (
+              <div className="p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl space-y-2 animate-in fade-in duration-150">
+                <label className="block text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+                  Deduction fraction per wrong answer:
+                </label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { val: 0.25, label: '¼ (0.25)' },
+                    { val: 0.33, label: '⅓ (0.33)' },
+                    { val: 0.5, label: '½ (0.50)' },
+                    { val: 1.0, label: '1 (1.00)' },
+                  ].map((item) => (
+                    <button
+                      key={item.val}
+                      type="button"
+                      onClick={() => updateForm('negative_mark', item.val)}
+                      className={`py-1 px-1.5 rounded-lg text-xs font-bold transition-all ${
+                        form.negative_mark === item.val
+                          ? 'bg-amber-600 text-white shadow-xs'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-amber-200 dark:border-amber-900/40 hover:bg-amber-100 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-amber-800 dark:text-amber-300 leading-tight">
+                  💡 On a 2-mark question, an error deducts{' '}
+                  <strong>{(2 * form.negative_mark).toFixed(2)} marks</strong>.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Card 4: CBT Template & Brand Colors */}
+          <div className="card p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Palette className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                Exam Interface &amp; Theme
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {THEME_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => updateForm('theme', opt.value)}
-                  className={`p-3 rounded-xl border-2 text-left text-sm font-medium transition-all ${
+                  className={`p-2.5 rounded-xl border text-center transition-all ${
                     form.theme === opt.value
-                      ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+                      ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/40 ring-1 ring-indigo-500/20 text-indigo-950 dark:text-indigo-200 font-bold'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  {opt.label}
+                  <p className="text-xs font-bold">{opt.label}</p>
+                  <p className="text-[10px] opacity-75 truncate">{opt.desc}</p>
                 </button>
               ))}
             </div>
-          </div>
-          {form.theme === 'custom' && (
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Primary Color</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={form.primary_color}
-                    onChange={e => updateForm('primary_color', e.target.value)}
-                    className="h-10 w-12 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
-                  />
-                  <input
-                    className="input flex-1"
-                    type="text"
-                    value={form.primary_color}
-                    onChange={e => updateForm('primary_color', e.target.value)}
-                    placeholder="#4F46E5"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Accent Color</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={form.accent_color}
-                    onChange={e => updateForm('accent_color', e.target.value)}
-                    className="h-10 w-12 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
-                  />
-                  <input
-                    className="input flex-1"
-                    type="text"
-                    value={form.accent_color}
-                    onChange={e => updateForm('accent_color', e.target.value)}
-                    placeholder="#0D9488"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
 
-        <div className="flex gap-3">
-          <Link href="/dashboard/tests" className="btn-secondary flex-1 text-center">
-            Cancel
-          </Link>
-          <button type="submit" disabled={loading} className="btn-primary flex-1">
-            {loading ? 'Creating…' : 'Create Test & Add Questions →'}
-          </button>
+            {form.theme === 'custom' && (
+              <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    Primary Color
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="color"
+                      value={form.primary_color}
+                      onChange={(e) => updateForm('primary_color', e.target.value)}
+                      className="h-8 w-9 rounded border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      className="input py-1 px-2 text-xs font-mono"
+                      type="text"
+                      value={form.primary_color}
+                      onChange={(e) => updateForm('primary_color', e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    Accent Color
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="color"
+                      value={form.accent_color}
+                      onChange={(e) => updateForm('accent_color', e.target.value)}
+                      className="h-8 w-9 rounded border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      className="input py-1 px-2 text-xs font-mono"
+                      type="text"
+                      value={form.accent_color}
+                      onChange={(e) => updateForm('accent_color', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Submit Strip */}
+          <div className="flex items-center gap-3 pt-1">
+            <Link href="/dashboard/tests" className="btn-secondary py-2.5 px-4 text-xs font-medium flex-1 text-center">
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary py-2.5 px-5 text-xs font-bold flex-[2] flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/20"
+            >
+              {loading ? (
+                'Creating…'
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Create Test &amp; Add Questions
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>
   );
 }
 
-function ToggleRow({
+function CompactToggle({
   label,
-  description,
+  desc,
   checked,
   onChange,
 }: {
   label: string;
-  description: string;
+  desc: string;
   checked: boolean;
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div
+      onClick={() => onChange(!checked)}
+      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-2 ${
+        checked
+          ? 'border-indigo-500/60 bg-indigo-50/40 dark:bg-indigo-950/30'
+          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+      }`}
+    >
       <div>
-        <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>
+        <p className="text-xs font-bold text-slate-900 dark:text-white">{label}</p>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">{desc}</p>
       </div>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+        onClick={(e) => {
+          e.stopPropagation();
+          onChange(!checked);
+        }}
+        className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors focus:outline-none flex-shrink-0 ${
           checked ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
         }`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-            checked ? 'translate-x-6' : 'translate-x-1'
+          className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform ${
+            checked ? 'translate-x-4' : 'translate-x-0.5'
           }`}
         />
       </button>
