@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
 
         $middleware->validateCsrfTokens(except: [
-            'api/v1/auth/*',
+            'api/*',
+            'api/v1/*',
             'sanctum/csrf-cookie',
         ]);
 
