@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '');
+// Normalize API_URL: strip any trailing slashes, /api, or /api/v1 provided in env vars
+const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000').trim();
+const API_URL = rawApiUrl.replace(/\/+$/, '').replace(/\/api(\/v1)?\/?$/, '');
 
 function getCookie(name: string): string | null {
   if (typeof document === 'undefined') return null;
