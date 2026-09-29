@@ -1,0 +1,27 @@
+/* Template C — Custom Creator-Defined Theme */
+
+[data-template="custom"] {
+  --radius-sm: var(--theme-radius-sm, 6px);
+  --radius-md: var(--theme-radius-md, 10px);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+
+  /* State colors — customizable via CSS vars or inline style overrides */
+  --state-answered: var(--theme-answered, #22c55e);
+  --state-not-answered: var(--theme-not-answered, #ef4444);
+  --state-not-visited: var(--theme-not-visited, #e2e8f0);
+  --state-marked: var(--theme-marked, #a855f7);
+  --state-answered-marked: var(--theme-answered-marked, #7c3aed);
+  --state-current-ring: var(--theme-current-ring, #3b82f6);
+
+  /* Runner palette */
+  --runner-bg: var(--theme-bg, #f8fafc);
+  --runner-card-bg: var(--theme-card-bg, #ffffff);
+  --runner-border: var(--theme-border, #e2e8f0);
+  --runner-header-bg: var(--theme-header-bg, #ffffff);
+  --runner-header-text: var(--theme-header-text, #0f172a);
+  --runner-primary: var(--theme-primary, #3b82f6);
+}
+

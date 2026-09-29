@@ -1,0 +1,64 @@
+# ==========================================
+# Root .gitignore for TestCraft AI
+# ==========================================
+
+# OS & Editor
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment & Secrets (NEVER COMMIT SECRETS)
+.env
+.env.*
+!.env.example
+!.env.local.example
+backend/.env
+backend/.env.backup
+backend/.env.production
+frontend/.env.local
+frontend/.env*.local
+
+# Node / Frontend Dependencies & Builds
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/*.tsbuildinfo
+frontend/.vercel/
+
+# PHP / Backend Dependencies & Cache
+backend/vendor/
+backend/public/build/
+backend/public/hot
+backend/public/storage
+backend/storage/*.key
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/framework/testing/*
+backend/storage/logs/*
+backend/storage/pail/
+backend/.phpunit.cache/
+backend/.phpunit.result.cache
+backend/_ide_helper.php
+backend/auth.json
+*.log
+
+# Databases & SQLite
+*.sqlite
+*.sqlite-journal
+backend/database/*.sqlite
+backend/database/*.sqlite-journal

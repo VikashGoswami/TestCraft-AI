@@ -1,0 +1,32 @@
+/* Template B — Focused Practice (CAT-prep style clean single-card layout) */
+
+[data-template="focused"] {
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+
+  /* State colors */
+  --state-answered: #22c55e;
+  --state-not-answered: #f87171;
+  --state-not-visited: #e5e7eb;
+  --state-marked: #a855f7;
+  --state-answered-marked: #8b5cf6;
+  --state-current-ring: #3b82f6;
+
+  /* Theme styling */
+  --runner-bg: #f9fafb;
+  --runner-card-bg: #ffffff;
+  --runner-border: #e5e7eb;
+  --runner-header-bg: #ffffff;
+  --runner-header-text: #111827;
+  --runner-primary: #2563eb;
+}
+
+[data-template="focused"] .test-runner-container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+

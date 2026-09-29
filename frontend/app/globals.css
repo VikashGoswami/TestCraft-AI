@@ -1,0 +1,84 @@
+@import '../components/test-runner/templates/focused.css';
+@import '../components/test-runner/templates/corporate.css';
+@import '../components/test-runner/templates/custom.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Design Token Contract (§6.3) ───────────────────────────────────── */
+.test-runner {
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+}
+
+/* Question palette tile states */
+.qpalette__tile[data-state="answered"]        { background: var(--state-answered); }
+.qpalette__tile[data-state="not-answered"]    { background: var(--state-not-answered); }
+.qpalette__tile[data-state="not-visited"]     { background: var(--state-not-visited); }
+.qpalette__tile[data-state="marked"]          { background: var(--state-marked); }
+.qpalette__tile[data-state="answered-marked"] { background: var(--state-answered-marked); }
+.qpalette__tile[data-state="current"]         { outline: 3px solid var(--state-current-ring); }
+
+/* ── Focused Template (default) ─────────────────────────────────────────── */
+[data-template="focused"] {
+  --state-answered:        #22c55e;  /* green-500 */
+  --state-not-answered:    #f87171;  /* red-400 */
+  --state-not-visited:     #e5e7eb;  /* gray-200 */
+  --state-marked:          #a855f7;  /* purple-500 */
+  --state-answered-marked: #8b5cf6;  /* violet-500 with check overlay */
+  --state-current-ring:    #3b82f6;  /* blue-500 */
+}
+
+/* ── Corporate Template (TCS iON style) ─────────────────────────────────── */
+[data-template="corporate"] {
+  --state-answered:        #16a34a;  /* green-600 */
+  --state-not-answered:    #dc2626;  /* red-600 */
+  --state-not-visited:     #d1d5db;  /* gray-300 */
+  --state-marked:          #7c3aed;  /* violet-700 */
+  --state-answered-marked: #5b21b6;  /* purple-800 */
+  --state-current-ring:    #1d4ed8;  /* blue-700 */
+}
+
+/* ── Custom Template ─────────────────────────────────────────────────────── */
+[data-template="custom"] {
+  /* Values injected via inline CSS vars from test theme */
+  --state-answered:        var(--theme-answered, #22c55e);
+  --state-not-answered:    var(--theme-not-answered, #f87171);
+  --state-not-visited:     var(--theme-not-visited, #e5e7eb);
+  --state-marked:          var(--theme-marked, #a855f7);
+  --state-answered-marked: var(--theme-answered-marked, #8b5cf6);
+  --state-current-ring:    var(--theme-current-ring, #3b82f6);
+}
+
+/* ── Global Utilities ───────────────────────────────────────────────────── */
+@layer base {
+  * { box-sizing: border-box; }
+  body { @apply bg-gray-50 text-gray-900 antialiased; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors;
+  }
+  .input {
+    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500;
+  }
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+}
+

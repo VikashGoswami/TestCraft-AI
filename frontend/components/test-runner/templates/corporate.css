@@ -1,0 +1,43 @@
+/* Template A — Corporate Assessment (TCS iON-style dense multi-panel layout) */
+
+[data-template="corporate"] {
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 12px;
+  --space-4: 18px;
+
+  /* State colors */
+  --state-answered: #16a34a;
+  --state-not-answered: #dc2626;
+  --state-not-visited: #cbd5e1;
+  --state-marked: #7c3aed;
+  --state-answered-marked: #5b21b6;
+  --state-current-ring: #1d4ed8;
+
+  /* Corporate TCS iON Theme Styling */
+  --runner-bg: #e2e8f0;
+  --runner-card-bg: #ffffff;
+  --runner-border: #94a3b8;
+  --runner-header-bg: #1e3a8a;
+  --runner-header-text: #ffffff;
+  --runner-primary: #1e40af;
+}
+
+[data-template="corporate"] .corporate-top-bar {
+  background-color: var(--runner-header-bg);
+  color: var(--runner-header-text);
+  border-bottom: 2px solid #172554;
+}
+
+[data-template="corporate"] .corporate-meta-strip {
+  background-color: #f1f5f9;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+[data-template="corporate"] .corporate-sidebar {
+  background-color: #f8fafc;
+  border-left: 2px solid #cbd5e1;
+}
+

@@ -1,0 +1,9 @@
+question_text,option_a,option_b,option_c,option_d,correct_option,topic,difficulty,marks
+What is the capital of France?,London,Paris,Berlin,Madrid,b,Geography,easy,1
+Which planet is closest to the Sun?,Venus,Earth,Mercury,Mars,c,Science,medium,2
+What is 15 × 4?,50,55,60,65,c,Mathematics,easy,1
+Who wrote Romeo and Juliet?,Charles Dickens,William Shakespeare,Jane Austen,Mark Twain,b,Literature,medium,2
+What is the chemical symbol for water?,H2O2,CO2,H2O,O2,c,Chemistry,easy,1
+Which data structure uses LIFO?,Queue,Stack,Tree,Graph,b,Computer Science,medium,2
+What is the speed of light in vacuum (approx)?,300000 km/s,150000 km/s,3000 km/s,30000 km/s,a,Physics,hard,3
+What is the derivative of sin(x)?,cos(x),-cos(x),sin(x),-sin(x),a,Mathematics,hard,3
