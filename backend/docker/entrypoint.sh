@@ -49,8 +49,9 @@ sed -i "s/listen 80;/listen ${PORT_TO_USE};/g" /etc/nginx/http.d/default.conf
 echo "Running migrations..."
 php artisan migrate --force || true
 
-echo "Seeding roles..."
-php artisan db:seed --force --class=RolesSeeder || true
+# Seed roles and demo data idempotently (or run manually via Render Shell)
+echo "Seeding database..."
+php artisan db:seed --force || true
 
 # Optimize cache for production
 echo "Caching configurations and routes..."
