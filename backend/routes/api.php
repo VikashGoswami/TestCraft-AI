@@ -17,6 +17,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
+    // ─── Public Health Check ──────────────────────────────────────────────────
+    Route::get('health', function () {
+        $database = 'connected';
+        try {
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
+        } catch (\Throwable $e) {
+            $database = 'error: ' . $e->getMessage();
+        }
+
+        return response()->json([
+            'status' => 'healthy',
+            'service' => 'TestCraft-AI Backend API',
+            'database' => $database,
+            'php' => PHP_VERSION,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
+
     // ─── Public Auth ──────────────────────────────────────────────────────────
     Route::post('auth/register', [RegisterController::class, 'register']);
     Route::post('auth/login', [SessionController::class, 'login']);
