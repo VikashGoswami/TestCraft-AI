@@ -1,0 +1,9 @@
+/vendor
+/node_modules
+/.git
+/.github
+/.env
+/storage/*.key
+.phpunit.result.cache
+database/database.sqlite
+database/database.sqlite-journal

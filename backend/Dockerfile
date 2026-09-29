@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -25,14 +25,25 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy composer files first for optimal docker layer caching
+COPY composer.json composer.lock ./
+
+# Install dependencies (production, ignore platform requirement differences)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --ignore-platform-reqs
+
 # Copy application code
 COPY . .
 
-# Run composer install for production
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Finish composer setup
+RUN composer dump-autoload --optimize --no-dev
 
 # Set up storage and cache permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+RUN mkdir -p /var/www/html/storage/framework/sessions \
+             /var/www/html/storage/framework/views \
+             /var/www/html/storage/framework/cache \
+             /var/www/html/storage/logs \
+             /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Copy server configurations and entrypoint
