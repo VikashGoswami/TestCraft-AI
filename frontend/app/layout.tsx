@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/hooks/useAuth';
 import { ThemeProvider } from '@/lib/hooks/useTheme';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'TestCraft-AI | Next-Gen AI Assessment Platform',
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
           </AuthProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
