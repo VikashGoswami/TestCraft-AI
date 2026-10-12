@@ -97,7 +97,7 @@ Respond ONLY with valid JSON matching this exact schema (no markdown formatting,
 }
 PROMPT;
 
-        $models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash'];
+        $models = ['gemini-1.5-flash', 'gemini-2.0-flash'];
 
         foreach ($models as $model) {
             try {

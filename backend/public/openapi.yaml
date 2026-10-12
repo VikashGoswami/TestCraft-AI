@@ -560,3 +560,4 @@ paths:
                 success: true
                 explanation: "Substitute x = 5 into 3(5) + 7 = 15 + 7 = 22."
                 short_trick: "Subtract 7 from 22 (15) and divide immediately by 3."
+

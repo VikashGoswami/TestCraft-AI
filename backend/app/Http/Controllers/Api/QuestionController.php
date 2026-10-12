@@ -108,7 +108,7 @@ class QuestionController extends Controller
         $correctText = $correct ? $correct->option_text : 'Not specified';
 
         $geminiKey = config('services.gemini.key');
-        $models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+        $models = ['gemini-1.5-flash', 'gemini-2.0-flash'];
 
         $explanation = null;
         $shortTrick = null;
