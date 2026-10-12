@@ -1,0 +1,562 @@
+openapi: 3.0.3
+info:
+  title: TestCraft-AI API Specification
+  version: 1.0.0
+  description: |
+    Comprehensive RESTful API specification for TestCraft-AI — an AI-powered assessment and CBT examination platform.
+    Features multimodal question paper extraction via Google Gemini 1.5 Flash, automated Claude performance analytics,
+    real-time test delivery state-machine, and multi-tenant RBAC.
+  contact:
+    name: TestCraft-AI Engineering Team
+    url: https://github.com/VikashGoswami/TestCraft-AI
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://testcraft-ai-u2jz.onrender.com/api/v1
+    description: Production Environment (Render)
+  - url: http://localhost:8000/api/v1
+    description: Local Development Environment
+
+tags:
+  - name: Health & System
+    description: System liveness, database health, and runtime diagnostic endpoints
+  - name: Authentication
+    description: User registration, credentials login, Google OAuth, and session tokens
+  - name: Dashboard & Analytics
+    description: Role-specific aggregate statistics and performance overviews
+  - name: Tests
+    description: Assessment CRUD, delivery options, time limits, and negative marking
+  - name: Questions & Paper Extraction
+    description: Question management, CSV ingestion, and Gemini AI multimodal paper parsing
+  - name: Test Shares & Access
+    description: Dynamic invite links, participant capacity limits, and QR-ready slugs
+  - name: Exam Engine & Attempts
+    description: Proctored test execution, 5-state question palette, auto-submit, and timer tracking
+  - name: AI Explanations & Reporting
+    description: On-demand problem-solving shortcuts and Claude diagnostic reports
+  - name: Classes & Cohorts
+    description: Classroom management, student enrollment, and 6-character join codes
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum Personal Access Token
+      description: Supply your Sanctum API token in the `Authorization: Bearer <token>` header.
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: laravel_session
+      description: Laravel Sanctum first-party SPA session cookie.
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Unauthenticated or validation error.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Dr. Eleanor Vance
+        email:
+          type: string
+          example: admin@mcq.com
+        roles:
+          type: array
+          items:
+            type: string
+          example: ["institution_admin"]
+        avatar_url:
+          type: string
+          nullable: true
+          example: null
+        institution_id:
+          type: integer
+          nullable: true
+          example: 1
+
+    Test:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: General Science & Mathematics Quiz
+        description:
+          type: string
+          nullable: true
+          example: Diagnostic quiz covering Algebra, Geometry, and Mechanics.
+        duration_minutes:
+          type: integer
+          example: 20
+        visibility:
+          type: string
+          enum: [public, private, invite_only]
+          example: public
+        passing_score:
+          type: integer
+          example: 60
+        negative_marking_enabled:
+          type: boolean
+          example: true
+        negative_marks_per_question:
+          type: number
+          format: float
+          example: 0.25
+        shuffle_questions:
+          type: boolean
+          example: true
+        shuffle_options:
+          type: boolean
+          example: true
+        status:
+          type: string
+          enum: [draft, published, archived]
+          example: published
+
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12
+        question_text:
+          type: string
+          example: What is the value of x if 3x + 7 = 22?
+        topic:
+          type: string
+          example: Algebra
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+          example: easy
+        marks:
+          type: number
+          example: 1.0
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
+
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 45
+        option_text:
+          type: string
+          example: "5"
+        is_correct:
+          type: boolean
+          example: true
+
+    Attempt:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        test_id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          enum: [in_progress, submitted, expired]
+          example: in_progress
+        score:
+          type: number
+          nullable: true
+          example: 85.5
+        started_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        time_remaining_seconds:
+          type: integer
+          example: 1140
+
+paths:
+  /health:
+    get:
+      tags: [Health & System]
+      summary: Liveness and database diagnostics
+      description: Returns service runtime metrics, PHP version, SQLite/database driver status, and table readiness.
+      responses:
+        '200':
+          description: System is healthy.
+          content:
+            application/json:
+              example:
+                status: healthy
+                service: TestCraft-AI Backend API
+                database: connected
+                details:
+                  driver: sqlite
+                  users_table: true
+                  roles_table: true
+                  users_count: 5
+                php: 8.4.26
+                timestamp: "2026-10-12T10:30:00Z"
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new account
+      description: Creates a user account, provisions RBAC role, auto-starts stateful session, and returns a Sanctum Bearer token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name:
+                  type: string
+                  example: Alex Rivera
+                email:
+                  type: string
+                  format: email
+                  example: student@mcq.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                password_confirmation:
+                  type: string
+                  example: password123
+                role:
+                  type: string
+                  enum: [individual, teacher, institution_admin, student]
+                  default: individual
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                user:
+                  id: 2
+                  name: Alex Rivera
+                  email: student@mcq.com
+                  roles: ["student"]
+                token: "1|sD98fF...sanctum_token"
+                message: Registration successful
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with credentials
+      description: Authenticates user credentials, sets session cookie, and returns a Sanctum Bearer token for cross-domain API calls.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: demo@mcq.com
+                password:
+                  type: string
+                  example: password
+                remember:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              example:
+                user:
+                  id: 1
+                  name: Sarah Jenkins
+                  email: demo@mcq.com
+                  roles: ["individual"]
+                token: "2|aK87jL...sanctum_token"
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      summary: Log out of current session
+      description: Revokes active session and invalidates authentication cookies.
+      responses:
+        '200':
+          description: Logged out successfully.
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      summary: Retrieve current authenticated user
+      responses:
+        '200':
+          description: User object with active roles.
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+
+  /dashboard:
+    get:
+      tags: [Dashboard & Analytics]
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      summary: Fetch role-based dashboard metrics
+      description: Returns customized aggregate metrics based on whether caller is an Individual Creator, Teacher, Admin, or Student.
+      responses:
+        '200':
+          description: Aggregated KPI metrics.
+
+  /tests:
+    get:
+      tags: [Tests]
+      security:
+        - bearerAuth: []
+      summary: List all tests accessible to current user
+      responses:
+        '200':
+          description: Paginated test items.
+    post:
+      tags: [Tests]
+      security:
+        - bearerAuth: []
+      summary: Create a new test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, duration_minutes, visibility]
+              properties:
+                title:
+                  type: string
+                  example: Physics Chapter 4 Motion Exam
+                description:
+                  type: string
+                  example: 30-minute diagnostic test
+                duration_minutes:
+                  type: integer
+                  example: 30
+                visibility:
+                  type: string
+                  enum: [public, private, invite_only]
+                  example: public
+                passing_score:
+                  type: integer
+                  example: 50
+                shuffle_questions:
+                  type: boolean
+                  default: true
+                shuffle_options:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Test created successfully.
+
+  /question-papers/extract:
+    post:
+      tags: [Questions & Paper Extraction]
+      security:
+        - bearerAuth: []
+      summary: Extract questions using Google Gemini Multimodal AI
+      description: Uploads a PDF, DOCX, JPG, or PNG question paper and extracts parsed multiple-choice questions with correct answers and difficulty tags.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Exam paper document (Max 20 MB)
+                context:
+                  type: string
+                  description: Optional context hint (e.g. CBSE Class 10 Physics)
+      responses:
+        '200':
+          description: Successfully parsed questions.
+          content:
+            application/json:
+              example:
+                success: true
+                count: 10
+                file_name: sample_paper.pdf
+                questions:
+                  - question_text: "What is Newton's Second Law of Motion?"
+                    option_a: "F = ma"
+                    option_b: "E = mc^2"
+                    option_c: "v = u + at"
+                    option_d: "W = Fd"
+                    correct_option: "a"
+                    topic: "Mechanics"
+                    difficulty: "easy"
+                    marks: 1
+
+  /tests/{test}/attempts:
+    post:
+      tags: [Exam Engine & Attempts]
+      summary: Begin a test attempt
+      description: Initializes a timed CBT test attempt, generating the 5-state question answer grid upfront.
+      parameters:
+        - name: test
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                share_slug:
+                  type: string
+                  example: science-demo
+                guest_name:
+                  type: string
+                  example: Guest Student
+                guest_email:
+                  type: string
+                  example: guest@example.com
+      responses:
+        '201':
+          description: Attempt session initialized.
+
+  /attempts/{attempt}/answers:
+    patch:
+      tags: [Exam Engine & Attempts]
+      security:
+        - bearerAuth: []
+      summary: Update answer state during test
+      description: Handles question transitions across the 5 states (not_visited, not_answered, answered, marked, answered_marked).
+      parameters:
+        - name: attempt
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question_id, action]
+              properties:
+                question_id:
+                  type: integer
+                selected_option_id:
+                  type: integer
+                  nullable: true
+                action:
+                  type: string
+                  enum: [visit, save, mark, clear]
+      responses:
+        '200':
+          description: Question state recorded.
+
+  /attempts/{attempt}/submit:
+    post:
+      tags: [Exam Engine & Attempts]
+      security:
+        - bearerAuth: []
+      summary: Submit test attempt and trigger AI analysis
+      description: Calculates test score, applies negative marking, locks attempt, and asynchronously dispatches Claude AI diagnostic job.
+      parameters:
+        - name: attempt
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Test submitted and scored.
+
+  /attempts/{attempt}/report:
+    get:
+      tags: [AI Explanations & Reporting]
+      security:
+        - bearerAuth: []
+      summary: Fetch Claude AI diagnostic report
+      description: Retrieves strong/weak topic analysis, overall score narrative, and customized improvement guidance generated by Anthropic Claude.
+      parameters:
+        - name: attempt
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: AI diagnostic analysis.
+          content:
+            application/json:
+              example:
+                generation_status: completed
+                strong_topics: ["Algebra", "Geometry"]
+                weak_topics: ["Thermodynamics"]
+                ai_summary: "You demonstrated solid mastery of foundational mathematics, scoring 85% overall."
+                topic_advice:
+                  - topic: "Thermodynamics"
+                    advice: "Review heat-transfer equations and Carnot cycle fundamentals."
+
+  /questions/{question}/ai-explanation:
+    post:
+      tags: [AI Explanations & Reporting]
+      security:
+        - bearerAuth: []
+      summary: Generate on-demand AI short tricks and explanations
+      description: Invokes LLM reasoning to produce step-by-step problem-solving logic and speed shortcuts for post-test student reviews.
+      parameters:
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: AI explanation generated.
+          content:
+            application/json:
+              example:
+                success: true
+                explanation: "Substitute x = 5 into 3(5) + 7 = 15 + 7 = 22."
+                short_trick: "Subtract 7 from 22 (15) and divide immediately by 3."
